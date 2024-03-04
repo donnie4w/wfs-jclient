@@ -1,36 +1,63 @@
 # wfs-jclient
-**WFS的JAVA实现访问接口**
 
+###### WFS的JAVA实现访问接口
+
+------------
+maven 
+
+    <dependency>    
+        <groupId>io.github.donnie4w</groupId>    
+        <artifactId>wfs-jclient</artifactId>    
+        <version>1.0.1</version>
+    </dependency>
+------------
+
+创建wfsclient实例对象
+
+    public WfsClient newClient() throws WfsException {
+        WfsClient wc = new WfsClient();
+        boolean ok = wc.newConnect(false, "127.0.0.1", 6802, "admin", "123");
+        if (!ok) {
+            System.out.println("connect failed");
+            return null;
+        }
+        return wc;
+    }
+
+参数说明：wc.newConnect(false, "127.0.0.1", 6802, "admin", "123")
+1. 第一个参数：是否TLS
+2. 第二个参数：wfs thrift 服务ip或域名
+3. 第三个参数：端口
+4. 第四个参数：后台用户名
+5. 第五个参数：后台密码
 
 ------------
 上传文件
 
-    获取wfs客户端实例：
-	WfsClient wc = new WfsClient("http://127.0.0.1:3434/thrift")
-	//读取文件
-	File f = new File("1.jpg");
-	FileInputStream fis = new FileInputStream(f);
-	byte[] bs = new byte[(int) f.length()];
-	fis.read(bs);
-	//上传 文件bytes, 文件名
-    wc.wfsPost(bs, "100.jpg", "jpg");
-	//相当于：curl -F "file=@1.jpg" "http://127.0.0.1:3434/u/100.jpg"
-	//1.jpg 是本地文件，100.jpg是上传到服务自定义的文件名，
-	//也可以：
-	wc.wfsPost(bs, "fff/ggg/1.jpg", "");
-	//访问则为：http://127.0.0.1:3434/r/fff/ggg/1.jpg
-	
+    public void append() throws WfsException, IOException {
+        String dir = System.getProperty("user.dir") + "/src/test/java/io/github/donnie4w/wfs/test/";
+        WfsClient wc = newClient();
+        WfsFile wf = new WfsFile();
+        wf.setName("test/java/1.jpeg");
+        wf.setData(Files.readAllBytes(Paths.get(dir + "1.jpeg")));
+        wc.append(wf);
+    }
+
 拉取 文件
 
-	byte[] bs = wc.wfsGet("100.jpg");
-	//相当于：http://127.0.0.1:3434/r/22.jpg
-	byte[] bs = wc.wfsGet("fff/ggg/22.jpg");
-	//相当于：http://127.0.0.1:3434/r/fff/ggg/22.jpg
+    public void get() throws WfsException {
+        WfsClient wc = newClient();
+        WfsData wd = wc.get("test/java/1.jpeg");
+        System.out.println(wd.getData() == null ? "data is null" : wd.getData().length);
+    }
 
 删除文件
 
-	 wc.wfsDel("100.jpg");
-	//相当于curl -X DELETE "http://127.0.0.1:3434/d/100.jpg"
-
-具体参考 项目测试用例
-
+    public void delete() throws WfsException {
+        WfsClient wc = newClient();
+        WfsAck wa = wc.delete("test/java/1.jpeg");
+        System.out.println(wa.ok);
+        if (!wa.ok) {
+            System.out.println(wa.getError().getInfo());
+        }
+    }
