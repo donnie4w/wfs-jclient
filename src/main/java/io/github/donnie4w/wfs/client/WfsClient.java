@@ -226,4 +226,12 @@ public class WfsClient {
             throw new WfsException(e);
         }
     }
+
+    public synchronized WfsAck rename(String path,String newPath)throws WfsException {
+        try {
+            return this.conn.Rename(path,newPath);
+        } catch (TException e) {
+            throw new WfsException(e);
+        }
+    }
 }
