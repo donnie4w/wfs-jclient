@@ -16,7 +16,7 @@ public class WfsTest {
 
     public WfsClient newClient() throws WfsException {
         WfsClient wc = new WfsClient();
-        boolean ok = wc.newConnect(false, "127.0.0.1", 6802, "admin", "123");
+        boolean ok = wc.newConnect(true, "127.0.0.1", 6802, "admin", "123");
         if (!ok) {
             System.out.println("connect failed");
             return null;
@@ -49,6 +49,13 @@ public class WfsTest {
         WfsClient wc = newClient();
         WfsData wd = wc.get("test/java/1.jpeg");
         System.out.println(wd.getData() == null ? "data is null" : wd.getData().length);
+    }
+
+    @Test
+    public void rename()throws WfsException {
+        WfsClient wc = newClient();
+        WfsAck wa =  wc.rename("1.jpeg","2.jpeg");
+        System.out.println(wa);
     }
 
 }
