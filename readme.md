@@ -8,7 +8,7 @@ maven
     <dependency>    
         <groupId>io.github.donnie4w</groupId>    
         <artifactId>wfs-jclient</artifactId>    
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </dependency>
 ------------
 
@@ -60,4 +60,12 @@ maven
         if (!wa.ok) {
             System.out.println(wa.getError().getInfo());
         }
+    }
+
+文件重命名
+
+    public void rename()throws WfsException {
+        WfsClient wc = newClient();
+        WfsAck wa =  wc.rename("1.jpeg","2.jpeg");
+        System.out.println(wa);
     }
